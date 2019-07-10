@@ -1,6 +1,6 @@
 package ru.skillbranch.devintensive.utils
 
-object Utils {
+/*object Utils {
 
   fun parseFullName(fullName: String?): Pair<String?, String?> {
 
@@ -106,4 +106,78 @@ object Utils {
 
     return "$transFirstName$divider$transLastName"
   }
+}
+*/
+object Utils {
+  fun parseFullName(fullName: String?): Pair<String?, String?> {
+    val parts: List<String>? = fullName?.split(" ")
+
+    var firstName = parts?.getOrNull(0)
+    var lastName = parts?.getOrNull(1)
+    if (firstName == "" || firstName == " ") firstName = null
+    if (lastName == "" || lastName == " ") lastName = null
+    return Pair(firstName, lastName)
+  }
+
+  fun transliteration(payload: String, delimiter: String = " "): String {
+    val dictionary: Map<Char, String> = mapOf(
+      'а' to "a",
+      'б' to "b",
+      'в' to "v",
+      'г' to "g",
+      'д' to "d",
+      'е' to "e",
+      'ё' to "e",
+      'ж' to "zh",
+      'з' to "z",
+      'и' to "i",
+      'й' to "i",
+      'к' to "k",
+      'л' to "l",
+      'м' to "m",
+      'н' to "n",
+      'о' to "o",
+      'п' to "p",
+      'р' to "r",
+      'с' to "s",
+      'т' to "t",
+      'у' to "u",
+      'ф' to "f",
+      'х' to "h",
+      'ц' to "c",
+      'ч' to "ch",
+      'ш' to "sh",
+      'щ' to "sh",
+      'ъ' to "",
+      'ы' to "i",
+      'ь' to "",
+      'э' to "e",
+      'ю' to "yu",
+      'я' to "ya",
+      ' ' to delimiter
+    )
+
+    val ar = payload.toCharArray()
+
+    val stringBuffer: StringBuffer? = StringBuffer()
+    for (char in ar) {
+      if (char.isUpperCase()) {
+        stringBuffer?.append(dictionary[char.toLowerCase()]!!.toUpperCase())
+      } else stringBuffer?.append(dictionary[char])
+    }
+
+    return stringBuffer.toString()
+  }
+
+  fun toInitials(firstName: String?, lastName: String?): String? {
+    var ini: String? = ""
+    val fN = firstName?.getOrNull(0).toString()
+    val lN = lastName?.getOrNull(0).toString()
+    if (fN != "" && fN != " " && fN != "null") ini = fN.toUpperCase()
+    if (lN != "" && lN != " " && lN != "null") ini += lN.toUpperCase()
+    if (ini == "" || ini == " ") ini = null
+    return ini
+  }
+
+
 }

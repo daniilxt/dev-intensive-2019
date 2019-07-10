@@ -8,46 +8,47 @@ class User(
   var firstName: String?,
   var lastName: String?,
   var avatar: String?,
-  var raiting: Int = 0,
+  var rating: Int = 0,
   var respect: Int = 0,
-  val lastVisit: Date? = Date(),
+  var lastVisit: Date? = Date(),
   var isOnline: Boolean = false
-
 ) {
-  constructor (id: String, firstName: String?, lastName: String?) : this(
+  constructor(id: String, firstName: String?, lastName: String?) : this(
     id = id,
     firstName = firstName,
     lastName = lastName,
     avatar = null
   )
 
-  constructor(id: String) : this(id, "John", "Doe $id")
+  constructor(id: String) : this(id, firstName = "John", lastName = "Doe")
 
   init {
-    println("I alive " +
-    "${if(lastName == "Doe") "His name is $firstName $lastName" else "And his name is $firstName $lastName"} \n")
+    println("It`s alive!!! ${if (lastName === "Doe") "His name is $firstName $lastName" else "And his name is $firstName $lastName!!!"} ")
   }
 
   fun printMe(): Unit {
-    println("""
-      id: $id
-      firstName: $firstName
-      lastName: $lastName
-      avatar: $avatar
-      raiting: $raiting
-      respect: $respect
-      lastVisit: $lastVisit
-      isOnline: $isOnline
-      """.trimIndent()
+    println(
+      """"
+          id:         $id
+          firstName : $firstName
+          lastName:   $lastName
+          avatar:     $avatar
+          rating:     $rating
+          respect:    $respect
+          lastVisit:  $lastVisit
+          isOnline: $isOnline
+          """.trimIndent()
     )
   }
-  companion object {
-  private var lastId: Int = -1
 
-  fun makeUser(fullName: String?): User {
-    lastId++
-    val (firstName, lastName) = Utils.parseFullName(fullName)
-    return User(id = "$lastId", firstName = firstName, lastName = lastName)
+  companion object Factory {
+    private var lastId: Int = -1
+
+    fun makeUser(fullName: String?): User {
+      lastId++
+
+      val (firstName, lastName) = Utils.parseFullName(fullName)
+      return User(id = "$lastId", firstName = firstName, lastName = lastName)
+    }
   }
-}
 }

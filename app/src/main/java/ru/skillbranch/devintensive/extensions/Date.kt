@@ -8,57 +8,14 @@ const val MINUTE = 60 * SECOND
 const val HOUR = 60 * MINUTE
 const val DAY = 24 * HOUR
 
-fun Date.format(pattern: String = " HH:mm:ss dd.MM.yy"): String {
+fun Date.format(pattern: String = "HH:mm:ss dd.MM.yy"): String? {
   val dateFormat = SimpleDateFormat(pattern, Locale("ru"))
   return dateFormat.format(this)
 }
 
-fun Date.humanizeDiff(date: Date = Date()): String {
-  val diff = (date.time - this.time)
-
-  return when (Math.abs(diff / DAY).toInt()) {
-
-    0 -> {
-      when (Math.abs(diff / HOUR).toInt()) {
-        0 -> {
-          when (Math.abs(diff / MINUTE).toInt()) {
-            0 -> {
-              when (Math.abs(diff / SECOND).toInt()) {
-                in 0..15 -> if ((diff / SECOND).toInt() >= 0) "только что" else "скоро"
-                else -> if ((diff / SECOND).toInt() > 0) "менее минуты назад" else "более чем через минуту"
-              }
-            }
-            1 -> "минуту назад"
-            in 2..4, in 22..24,
-            in 32..34, in 42..44,
-            in 52..54 -> if ((diff / MINUTE).toInt() > 0) "${diff / MINUTE} минуты назад" else "через ${-diff / MINUTE} минуты"
-            21, 31, 41, 51 -> if ((diff / MINUTE).toInt() > 0) "${diff / MINUTE} минуту назад" else "через ${-diff / MINUTE} минуту"
-            else -> if ((diff / MINUTE).toInt() > 0) "${diff / MINUTE} минут назад" else "через ${-diff / MINUTE} минут"
-          }
-        }
-        1, 21 -> if ((diff / HOUR).toInt() > 0) "${diff / HOUR} час назад" else "через ${diff / HOUR} час"
-        in 2..4, in 22..24 -> if ((diff / HOUR).toInt() > 0) "${diff / HOUR} часа назад" else "через ${diff / HOUR} часа"
-        else -> if ((diff / HOUR).toInt() > 0) "${diff / HOUR} часов назад" else "через ${diff / HOUR} часов"
-      }
-    }
-
-    1 -> if ((diff / DAY).toInt() > 0) "вчера" else "завтра"
-    in 2..4 -> if ((diff / DAY).toInt() > 0) "${diff / DAY} дня назад" else "через ${-diff / DAY} дня"
-    in 5..7 -> if ((diff / DAY).toInt() > 0) "${diff / DAY} дней назад" else "через ${-diff / DAY} дней"
-    in 8..14 -> if((diff / DAY).toInt() > 0) "более недели назад" else "более чем через неделю"
-    in 15..31 -> if((diff / DAY).toInt() > 0) "более двух недель назад" else "более чем через две недели"
-    in 32..61 -> if((diff / DAY).toInt() > 0) "более месяца назад" else "более чем через месяц"
-    in 62..182 -> if((diff / DAY).toInt() > 0) "более ${diff / DAY} месяцев назад" else "более чем через ${-diff / DAY} месяца"
-    in 183..365 -> if((diff / DAY).toInt() > 0) "более полугода назад" else "более чем через полгода"
-    in 365..Int.MAX_VALUE -> if((diff / DAY).toInt() > 0) "более года назад" else "более чем через год"
-
-    else -> "никогда"
-  }
-}
-
-
 fun Date.add(value: Int, units: TimeUnits = TimeUnits.SECOND): Date {
   var time = this.time
+
   time += when (units) {
     TimeUnits.SECOND -> value * SECOND
     TimeUnits.MINUTE -> value * MINUTE
@@ -69,5 +26,67 @@ fun Date.add(value: Int, units: TimeUnits = TimeUnits.SECOND): Date {
   return this
 }
 
+val padezhi: Map<Long, Array<String>> = mapOf(
+  MINUTE to arrayOf("минуту", "минуты", "минут"),
+  HOUR to arrayOf("час", "часа", "часов"),
+  DAY to arrayOf("день", "дня", "дней")
+)
 
-enum class TimeUnits { SECOND, MINUTE, HOUR, DAY }
+fun Date.humanizeDiff(date: Date = Date()): String {
+  val diff = date.time - this.time
+  var humanDiff = "только что"
+  if (diff < 2 * SECOND) {
+    if (diff < (45 * SECOND)) humanDiff = "несколько секунд назад"
+    else if (diff < 75 * SECOND) humanDiff = "минуту назад"
+    else if (diff < (45 * MINUTE)) humanDiff = "${diff / MINUTE} минут назад"
+    else if (diff < (75 * MINUTE)) humanDiff = "час назад"
+    else if (diff < (22 * HOUR)) {
+      if ((diff / HOUR) < 5) humanDiff = "${diff / HOUR} часа назад"
+      else humanDiff = "${diff / HOUR} часов назад"
+    } else if (diff < (26 * HOUR)) humanDiff = "день назад"
+    else if (diff < (360 * DAY)) {
+      if ((diff / DAY) < 5) humanDiff = "${diff / DAY} дня назад"
+      else humanDiff = "${diff / DAY} дней назад"
+    } else humanDiff = "более года назад"
+  }
+  if (diff < (-1 * SECOND)) {
+    if (diff > (-45 * SECOND)) humanDiff = "через ${diff / -SECOND} секунду"
+
+    humanDiff = "более чем через год"
+    if (diff > (-360 * DAY)) {
+      if ((diff / DAY) > -5) humanDiff = "через ${diff / -DAY} дня"
+      else humanDiff = "через ${diff / -DAY} дней"
+    } else if (diff > (-26 * HOUR)) humanDiff = "через день"
+    else if (diff > (-22 * HOUR)) {
+      if ((diff / HOUR) > -5) humanDiff = "через ${diff / -HOUR} часа"
+      else humanDiff = "через ${diff / -HOUR} часов"
+    } else if (diff > (-75 * MINUTE)) humanDiff = "через час"
+    else if (diff > (-45 * MINUTE)) {
+      if ((diff / MINUTE) > -5) humanDiff = "через ${diff / -MINUTE} минуты"
+      else humanDiff = "через ${diff / -MINUTE} минут"
+    } else if (diff > (-75 * SECOND)) humanDiff = "через минуту"
+
+  }
+  return humanDiff
+
+}
+
+enum class TimeUnits(val arr: Array<String>) {
+
+  SECOND(arrayOf("секунду", "секунды", "секунд")),
+  MINUTE(arrayOf("минуту", "минуты", "минут")),
+  HOUR(arrayOf("час", "часа", "часов")),
+  DAY(arrayOf("день", "дня", "дней"));
+
+  open fun plural(value: Int): String {
+    var s: String = ""
+    if (value / 10 == 1 || (value % 10 in 5..9) || value % 10 == 0)
+      s = "$value ${this.arr[2]}"
+    else if (value % 10 == 1)
+      s = "$value ${this.arr[0]}"
+    else if (value % 10 < 5)
+      s = "$value ${this.arr[1]}"
+    return s
+  }
+
+}
