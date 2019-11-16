@@ -1,183 +1,117 @@
 package ru.skillbranch.devintensive.utils
 
-/*object Utils {
 
-  fun parseFullName(fullName: String?): Pair<String?, String?> {
-
-    if (fullName.isNullOrBlank())
-      return Pair(null, null)
-
-    val parts: List<String>? = fullName.split(" ")
-
-    val firstName = parts?.getOrNull(0)
-    val lastName = parts?.getOrNull(1)
-
-    return firstName to lastName
-  }
-  fun toInitials(firstName: String?, lastName: String?): String? {
-    var initials = ""
-
-    if (!firstName.isNullOrBlank()) {
-      initials += "${firstName.capitalize()[0]}"
-    }
-    if (!lastName.isNullOrBlank()) {
-      initials += "${lastName.capitalize()[0]}"
-    }
-    if (firstName.isNullOrBlank() && lastName.isNullOrBlank())
-      return null
-
-    return initials
-  }
-
-  fun transliteration(fullName: String?, divider: String = " "): String {
-
-    val literas = mutableMapOf(
-      "а" to "a",
-      "б" to "b",
-      "в" to "v",
-      "г" to "g",
-      "д" to "d",
-      "е" to "e",
-      "ё" to "e",
-      "ж" to "zh",
-      "з" to "z",
-      "и" to "i",
-      "й" to "i",
-      "к" to "k",
-      "л" to "l",
-      "м" to "m",
-      "н" to "n",
-      "о" to "o",
-      "п" to "p",
-      "р" to "r",
-      "с" to "s",
-      "т" to "t",
-      "у" to "u",
-      "ф" to "f",
-      "х" to "h",
-      "ц" to "c",
-      "ч" to "ch",
-      "ш" to "sh",
-      "щ" to "sh'",
-      "ъ" to "",
-      "ы" to "i",
-      "ь" to "",
-      "э" to "e",
-      "ю" to "yu",
-      "я" to "ya"
-    )
-
-    val (firstName, lastName) = parseFullName(fullName)
-
-    var transFirstName = ""
-    var transLastName = ""
-
-    if (!firstName.isNullOrBlank()) {
-
-      firstName.decapitalize()
-
-      for (it in firstName.toCharArray()) {
-        if (literas.containsKey(it.toLowerCase().toString())) {
-          transFirstName += literas.get(it.toLowerCase().toString())
-        } else {
-          transFirstName += it.toLowerCase().toString()
-        }
-      }
-    }
-
-    if (!lastName.isNullOrBlank()) {
-
-      lastName.decapitalize()
-
-      for (it in lastName.toCharArray()) {
-        if (literas.containsKey(it.toLowerCase().toString())) {
-          transLastName += literas.get(it.toLowerCase().toString())
-        } else {
-          transLastName += it.toLowerCase().toString()
-        }
-      }
-    }
-
-    transFirstName = transFirstName.capitalize()
-    transLastName = transLastName.capitalize()
-
-    if (transFirstName.isBlank() || transLastName.isBlank())
-      return "$transFirstName$transLastName"
-
-    return "$transFirstName$divider$transLastName"
-  }
-}
-*/
 object Utils {
-  fun parseFullName(fullName: String?): Pair<String?, String?> {
-    val parts: List<String>? = fullName?.split(" ")
-
-    var firstName = parts?.getOrNull(0)
-    var lastName = parts?.getOrNull(1)
-    if (firstName == "" || firstName == " ") firstName = null
-    if (lastName == "" || lastName == " ") lastName = null
-    return Pair(firstName, lastName)
-  }
-
-  fun transliteration(payload: String, delimiter: String = " "): String {
-    val dictionary: Map<Char, String> = mapOf(
-      'а' to "a",
-      'б' to "b",
-      'в' to "v",
-      'г' to "g",
-      'д' to "d",
-      'е' to "e",
-      'ё' to "e",
-      'ж' to "zh",
-      'з' to "z",
-      'и' to "i",
-      'й' to "i",
-      'к' to "k",
-      'л' to "l",
-      'м' to "m",
-      'н' to "n",
-      'о' to "o",
-      'п' to "p",
-      'р' to "r",
-      'с' to "s",
-      'т' to "t",
-      'у' to "u",
-      'ф' to "f",
-      'х' to "h",
-      'ц' to "c",
-      'ч' to "ch",
-      'ш' to "sh",
-      'щ' to "sh",
-      'ъ' to "",
-      'ы' to "i",
-      'ь' to "",
-      'э' to "e",
-      'ю' to "yu",
-      'я' to "ya",
-      ' ' to delimiter
-    )
-
-    val ar = payload.toCharArray()
-
-    val stringBuffer: StringBuffer? = StringBuffer()
-    for (char in ar) {
-      if (char.isUpperCase()) {
-        stringBuffer?.append(dictionary[char.toLowerCase()]!!.toUpperCase())
-      } else stringBuffer?.append(dictionary[char])
+    fun parseFullName(fullName: String?): Pair<String?, String?> {
+        if (fullName == "" || fullName == " " || fullName == null)
+            return null to null
+        val parts: List<String> = fullName.split(" ")
+        var firstName: String? = null
+        var lastName: String? = null
+        var key = false
+        for (item in parts) {
+            if (!key && item != "" && item != " ") {
+                firstName = item
+                key = true
+            } else if (key && item != "" && item != " ") {
+                lastName = item
+                return firstName to lastName
+            }
+        }
+        return firstName to lastName
     }
 
-    return stringBuffer.toString()
-  }
+    fun transliteration(payload: String, divider: String = " "): String {
+        return convertRU(payload.trim().replace(" ", divider))
+    }
 
-  fun toInitials(firstName: String?, lastName: String?): String? {
-    var ini: String? = ""
-    val fN = firstName?.getOrNull(0).toString()
-    val lN = lastName?.getOrNull(0).toString()
-    if (fN != "" && fN != " " && fN != "null") ini = fN.toUpperCase()
-    if (lN != "" && lN != " " && lN != "null") ini += lN.toUpperCase()
-    if (ini == "" || ini == " ") ini = null
-    return ini
-  }
+    fun toInitials(firstName: String?, lastName: String?): String? {
+        if (firstName != null && firstName != "" && firstName != " ") {
+            val firstName = firstName.trim()
+            if (lastName != null && lastName != "" && lastName != " ") {
+                val lastName = lastName.trim()
+                return firstName[0].toUpperCase() + "" + lastName[0].toUpperCase()
+            }
+            return firstName[0].toUpperCase() + ""
+        } else if (lastName != null && lastName != "" && lastName != " ") {
+            val lastName = lastName.trim()
+            return lastName[0].toUpperCase() + ""
+        } else return null
+    }
 
+    private fun convertRU(cyr: String): String {
+        //Lower case letters
+        var lat = cyr.replace("а".toRegex(), "a")
+        lat = lat.replace("б".toRegex(), "b")
+        lat = lat.replace("в".toRegex(), "v")
+        lat = lat.replace("г".toRegex(), "g")
+        lat = lat.replace("д".toRegex(), "d")
+        lat = lat.replace("е".toRegex(), "e")
+        lat = lat.replace("ё".toRegex(), "e")
+        lat = lat.replace("ж".toRegex(), "zh")
+        lat = lat.replace("з".toRegex(), "z")
+        lat = lat.replace("и".toRegex(), "i")
+        lat = lat.replace("й".toRegex(), "i")
+        lat = lat.replace("к".toRegex(), "k")
+        lat = lat.replace("л".toRegex(), "l")
+        lat = lat.replace("м".toRegex(), "m")
+        lat = lat.replace("н".toRegex(), "n")
+        lat = lat.replace("о".toRegex(), "o")
+        lat = lat.replace("п".toRegex(), "p")
+        lat = lat.replace("р".toRegex(), "r")
+        lat = lat.replace("с".toRegex(), "s")
+        lat = lat.replace("т".toRegex(), "t")
+        lat = lat.replace("у".toRegex(), "u")
+        lat = lat.replace("ф".toRegex(), "f")
+        lat = lat.replace("х".toRegex(), "h")
+        lat = lat.replace("ц".toRegex(), "c")
+        lat = lat.replace("ч".toRegex(), "ch")
+        lat = lat.replace("ш".toRegex(), "sh")
+        lat = lat.replace("щ".toRegex(), "sh'")
+        lat = lat.replace("ъ".toRegex(), "")
+        lat = lat.replace("ы".toRegex(), "i")
+        lat = lat.replace("ь".toRegex(), "")
+        lat = lat.replace("э".toRegex(), "e")
+        lat = lat.replace("ю".toRegex(), "yu")
+        lat = lat.replace("я".toRegex(), "ya")
+
+        //Capital letters
+        lat = lat.replace("А".toRegex(), "A")
+        lat = lat.replace("Б".toRegex(), "B")
+        lat = lat.replace("В".toRegex(), "V")
+        lat = lat.replace("Г".toRegex(), "G")
+        lat = lat.replace("Д".toRegex(), "D")
+        lat = lat.replace("Е".toRegex(), "E")
+        lat = lat.replace("Ё".toRegex(), "E")
+        lat = lat.replace("Ж".toRegex(), "Zh")
+        lat = lat.replace("З".toRegex(), "Z")
+        lat = lat.replace("И".toRegex(), "I")
+        lat = lat.replace("Й".toRegex(), "I")
+        lat = lat.replace("К".toRegex(), "K")
+        lat = lat.replace("Л".toRegex(), "L")
+        lat = lat.replace("М".toRegex(), "M")
+        lat = lat.replace("Н".toRegex(), "N")
+        lat = lat.replace("О".toRegex(), "O")
+        lat = lat.replace("П".toRegex(), "P")
+        lat = lat.replace("Р".toRegex(), "R")
+        lat = lat.replace("С".toRegex(), "S")
+        lat = lat.replace("Т".toRegex(), "T")
+        lat = lat.replace("У".toRegex(), "U")
+        lat = lat.replace("Ф".toRegex(), "F")
+        lat = lat.replace("Х".toRegex(), "H")
+        lat = lat.replace("Ц".toRegex(), "C")
+        lat = lat.replace("Ч".toRegex(), "Ch")
+        lat = lat.replace("Ш".toRegex(), "Sh")
+        lat = lat.replace("Щ".toRegex(), "Sh'")
+        lat = lat.replace("Ъ".toRegex(), "")
+        lat = lat.replace("Ы".toRegex(), "I")
+        lat = lat.replace("Ь".toRegex(), "")
+        lat = lat.replace("Э".toRegex(), "E")
+        lat = lat.replace("Ю".toRegex(), "Yu")
+        lat = lat.replace("Я".toRegex(), "Ya")
+
+
+        return lat //Return latinized string
+    }
 
 }
