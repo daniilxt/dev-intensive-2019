@@ -16,7 +16,7 @@ import ru.skillbranch.devintensive.models.Bender
 
 
 class MainActivity : AppCompatActivity(), View.OnClickListener {
-    //новая жизнь 2020
+    //новая жизнь 2020 eee
 
     private lateinit var benderImage: ImageView
     private lateinit var textTxt: TextView
