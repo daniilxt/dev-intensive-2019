@@ -8,4 +8,10 @@
     <string name="error_message_map">Map loading failed</string>
     <string name="centerimage">Сenter Image</string>
     <string name="bender">bender</string>
+    <string name="profile_label_rating">Рейтинг</string>
+    <string name="profile_label_respect">Уважение</string>
+    <string name="profile_hint_repository">Репозиторий</string>
+    <string name="profile_hint_about">О себе</string>
+    <string name="profile_hint_last_name">Фамилия</string>
+    <string name="profile_hint_first_name">Имя</string>
 </resources>

@@ -1,21 +1,16 @@
-package ru.skillbranch.devintensive
+package ru.skillbranch.devintensive.ui.profile
 
-import android.graphics.Color
-import android.graphics.PorterDuff
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.view.View
-import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
-import kotlinx.android.synthetic.main.activity_main_base.*
-import ru.skillbranch.devintensive.extensions.hideKeyboard
+import androidx.appcompat.app.AppCompatActivity
+import ru.skillbranch.devintensive.R
 import ru.skillbranch.devintensive.models.Bender
 
 
-class MainActivity : AppCompatActivity(), View.OnClickListener {
+class ProfileActivity : AppCompatActivity(){
     //новая жизнь 2020 eee
 
     private lateinit var benderImage: ImageView
@@ -38,29 +33,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
      */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        setContentView(R.layout.activity_profile)
 
 //        val editSearch: EditText = findViewById(R.id.et_message)
 //        editSearch.setOnEditorActionListener(this)
-
-        benderImage = iv_bender
-        textTxt = tv_text
-        messageEt = et_message
-        sendBtn = iv_send
-
-        makeSendOnActionDone(messageEt)
-
-        val status = savedInstanceState?.getString("STATUS") ?: Bender.Status.NORMAL.name
-        val question = savedInstanceState?.getString("QUESTION") ?: Bender.Question.NAME.name
-        benderObj = Bender(Bender.Status.valueOf(status), Bender.Question.valueOf(question))
-
-        Log.d("M_MainActivity", "onCreate")
-
-        val (r, g, b) = benderObj.status.color
-        benderImage.setColorFilter(Color.rgb(r, g, b), PorterDuff.Mode.MULTIPLY)
-
-        textTxt.text = benderObj.askQuestion()
-        sendBtn.setOnClickListener(this)
     }
 
     /**
@@ -155,40 +131,12 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
      * Для API Level >= 28 метод будет вызван после onStop().
      * Не будет вызван, если Activity будет явно закрыто пользователем при нажатии на системную клавишу back.
      */
-    override fun onSaveInstanceState(outState: Bundle?) {
+/*    override fun onSaveInstanceState(outState: Bundle?) {
         if (outState != null) {
             super.onSaveInstanceState(outState)
             outState.putString("STATUS", benderObj.status.name)
             outState.putString("QUESTION", benderObj.question.name)
         }
         Log.d("M_MainActivity", "onSaveInstanceState ${benderObj.status.name} ${benderObj.question.name}")
-    }
-
-     private fun sendAnswer() {
-        Log.d("M_MainActivity", "click")
-        val (phrase, color) = benderObj.listenAnswer(messageEt.text.toString())
-        messageEt.setText("")
-        val (r, g, b) = color
-        benderImage.setColorFilter(Color.rgb(r, g, b), PorterDuff.Mode.MULTIPLY)
-        textTxt.text = phrase
-    }
-
-    override fun onClick(v: View) {
-        when (v.id) {
-            R.id.iv_send -> {
-                sendAnswer()
-                hideKeyboard()
-            }
-            R.id.et_message -> sendAnswer()
-        }
-    }
-
-    private fun makeSendOnActionDone(editText: EditText) {
-        editText.setOnEditorActionListener { _, actionId, _ ->
-            if (actionId == EditorInfo.IME_ACTION_DONE) {
-                onClick(editText)
-            }
-            false
-        }
-    }
+    }*/
 }
