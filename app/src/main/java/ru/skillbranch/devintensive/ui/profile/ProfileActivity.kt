@@ -2,22 +2,23 @@ package ru.skillbranch.devintensive.ui.profile
 
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.EditText
-import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import kotlinx.android.synthetic.main.activity_profile.*
 import ru.skillbranch.devintensive.R
-import ru.skillbranch.devintensive.models.Bender
 
 
-class ProfileActivity : AppCompatActivity(){
+class ProfileActivity : AppCompatActivity() {
     //новая жизнь 2020 eee
+    companion object {
+        const val IS_EDIT_MODE = "IS_EDIT_MODE"
+    }
 
-    private lateinit var benderImage: ImageView
-    private lateinit var textTxt: TextView
-    private lateinit var messageEt: EditText
-    private lateinit var sendBtn: ImageView
-    private lateinit var benderObj: Bender
+    var isEditMode = false
+    lateinit var viewFields: Map<String, TextView>
+
     /**
      * Вызывается при первом создании или перезапуске Activity.
      *
@@ -34,9 +35,48 @@ class ProfileActivity : AppCompatActivity(){
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_profile)
+        initViews(savedInstanceState)
+    }
+/*
 
-//        val editSearch: EditText = findViewById(R.id.et_message)
-//        editSearch.setOnEditorActionListener(this)
+    override fun onSaveInstanceState(outState: Bundle?) {
+        super.onSaveInstanceState(outState)
+    }
+*/
+
+    private fun initViews(savedInstanceState: Bundle?) {
+        viewFields = mapOf(
+            "nickname" to tv_nickname,
+            "rank" to tv_rank,
+            "firstName" to et_first_name,
+            "lastName" to et_second_name,
+            "about" to et_about,
+            "repository" to et_repo,
+            "rating" to tv_rating,
+            "respect" to tv_respect
+        )
+        btn_edit.setOnClickListener {
+            isEditMode = !isEditMode
+            showCurrentMode(isEditMode)
+        }
+    }
+
+    private fun showCurrentMode(isEdit: Boolean) {
+        val info = viewFields.filter {
+            setOf(
+                "firstName",
+                "lastName",
+                "about",
+                "repository"
+            ).contains(it.key)
+        }
+        for ((_,v) in info) {
+            v as EditText
+            v.isFocusable = isEditMode
+            v.isFocusableInTouchMode = isEdit
+            v.isEnabled  = isEdit
+            v.background.alpha = if (isEdit) 255 else 0
+        }
     }
 
     /**
@@ -131,12 +171,4 @@ class ProfileActivity : AppCompatActivity(){
      * Для API Level >= 28 метод будет вызван после onStop().
      * Не будет вызван, если Activity будет явно закрыто пользователем при нажатии на системную клавишу back.
      */
-/*    override fun onSaveInstanceState(outState: Bundle?) {
-        if (outState != null) {
-            super.onSaveInstanceState(outState)
-            outState.putString("STATUS", benderObj.status.name)
-            outState.putString("QUESTION", benderObj.question.name)
-        }
-        Log.d("M_MainActivity", "onSaveInstanceState ${benderObj.status.name} ${benderObj.question.name}")
-    }*/
 }

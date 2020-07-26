@@ -24,7 +24,7 @@
         <item name="android:singleLine">true</item>
     </style>
 
-    <style name="Profile.EditText.MultiLine" parent="Profile">
+    <style name="Profile.EditText.MultiLine" parent="Profile.EditText">
         <item name="android:inputType">textMultiLine</item>
         <item name="android:maxLength">128</item>
     </style>
@@ -46,7 +46,7 @@
 
     <!--METRICS INFO-->
     <style name="Profile.Metrics" parent="Profile">
-        <item name="android:color">@color/white</item>
+        <item name="android:textColor">@color/white</item>
     </style>
 
     <style name="Profile.Metrics.Label" parent="Profile.Metrics">
